@@ -1,0 +1,27 @@
+FROM alpine:3.18
+
+# Install curl and other utilities
+RUN apk add --no-cache \
+    curl \
+    wget \
+    bash \
+    ca-certificates
+
+# Set kafkactl version
+ARG KAFKACTL_VERSION=5.2.0
+
+# Download and install kafkactl
+RUN wget https://github.com/deviceinsight/kafkactl/releases/download/v${KAFKACTL_VERSION}/kafkactl_${KAFKACTL_VERSION}_linux_amd64.tar.gz \
+    && tar -xzf kafkactl_${KAFKACTL_VERSION}_linux_amd64.tar.gz \
+    && mv kafkactl /usr/local/bin/ \
+    && chmod +x /usr/local/bin/kafkactl \
+    && rm kafkactl_${KAFKACTL_VERSION}_linux_amd64.tar.gz
+
+# Create kafkactl config directory
+RUN mkdir -p /root/.config/kafkactl
+
+# Set working directory
+WORKDIR /workspace
+
+# Set default command
+CMD ["/bin/bash"]

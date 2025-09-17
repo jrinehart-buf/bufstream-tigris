@@ -1,0 +1,64 @@
+services:
+  # A Postgres instance providing a metadata store for Bufstream.
+  postgres:
+    container_name: postgres
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_USER: bufstream
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: bufstream
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bufstream"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      bufstream_net:
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+
+  # The Bufstream broker, relying on Tigris for object storage
+  # Additional configuration is in config/bufstream.yaml.
+  bufstream:
+    image: bufbuild/bufstream-main
+    hostname: ${KAFKA_HOST}
+    container_name: bufstream
+    networks:
+      bufstream_net:
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      BUFSTREAM_KAFKA_HOST: ${KAFKA_HOST}
+      BUFSTREAM_KAFKA_PUBLIC_HOST: ${KAFKA_HOST}
+      TIGRIS_ACCESS_KEY_ID: ${TIGRIS_ACCESS_KEY_ID}
+      TIGRIS_SECRET_ACCESS_KEY: ${TIGRIS_SECRET_ACCESS_KEY}
+    ports:
+      - "${KAFKA_PORT}:9092"
+      - "9089:9089"
+    volumes:
+      - ./bufstream.yaml:/bufstream.yaml
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/bufstream", "admin", "status", "--exit-code", "--url", "http://127.0.0.1:9089"]
+    command: ["serve", "--config", "/bufstream.yaml"]
+
+  cli:
+    container_name: cli
+    build:
+      context: .
+      dockerfile: Dockerfile.kafkactl
+      args:
+        - KAFKACTL_VERSION=${KAFKACTL_VERSION}
+    network_mode: host
+    volumes:
+      - ./messages.txt:/messages.txt
+    stdin_open: true
+    tty: true
+    command: tail -f /dev/null  # Keep container running
+
+networks:
+  bufstream_net:
+
