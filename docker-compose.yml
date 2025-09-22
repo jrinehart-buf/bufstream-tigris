@@ -23,7 +23,7 @@ services:
   # The Bufstream broker, relying on Tigris for object storage
   # Additional configuration is in config/bufstream.yaml.
   bufstream:
-    image: bufbuild/bufstream-main
+    image: bufbuild/bufstream
     hostname: ${KAFKA_HOST}
     container_name: bufstream
     networks:

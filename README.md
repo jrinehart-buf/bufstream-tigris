@@ -16,10 +16,11 @@ Docker Desktop or another similar app like Podman Desktop.
 
 1. Create a Tigris bucket in the standard tier.
 2. [Create an access key](https://console.tigris.dev/createaccesskey) and note the ID and secret. Give it "Editor" permissions for your bucket.
-3. Update .env with your Tigris key ID and secret and set your endpoint URL to point to Tigris:
-     `TIGRIS_ACCESS_KEY_ID=tid_`
-     `TIGRIS_SECRET_ACCESS_KEY=tsec_`
-     `endpoint=https://t3.storage.dev`
+3. Update .env with your Tigris key ID and secret:
+    ```
+     TIGRIS_ACCESS_KEY_ID=tid_
+     TIGRIS_SECRET_ACCESS_KEY=tsec_
+    ```
 4. In bufstream/config/bufstream.yaml, update storage.bucket to use the bucket name.
 5. Start the environment, using -d to return to the prompt:
 
