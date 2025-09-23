@@ -1,29 +1,16 @@
 # yaml-language-server: $schema=schema/buf.bufstream.config.v1alpha1.BufstreamConfig.schema.json
+version: v1beta1
 cluster: tigris-start
-zone: localhost
-name: local
-postgres:
-  dsn:
+metadata:
+  postgres:
     string: postgres://bufstream:password@postgres:5432/bufstream
-kafka:
-  address:
-    host: 0.0.0.0
-    port: 9092
-  public_address:
-    host: 0.0.0.0
-    port: 9092
-observability:
-  log_level: INFO
-  log_format: TEXT
-  debug_address:
-    host: 0.0.0.0
-storage:
-  provider: S3
-  region: auto
-  bucket: # Add your Tigris bucket name here.
-  endpoint: https://t3.storage.dev
-  # Don't update these: they're references to environment variable names.
-  access_key_id:
-    env_var: TIGRIS_ACCESS_KEY_ID
-  secret_access_key:
-    env_var: TIGRIS_SECRET_ACCESS_KEY
+data:
+  s3:
+    uri: # Add your Tigris bucket URI here, like s3://my-bucket/
+    region: auto
+    endpoint: https://t3.storage.dev
+    # Don't update these: they're references to environment variable names.
+    access_key_id:
+      env_var: TIGRIS_ACCESS_KEY_ID
+    secret_access_key:
+      env_var: TIGRIS_SECRET_ACCESS_KEY
